@@ -108,7 +108,6 @@ class Crawer91:
             video_url = i.find('a', title=True)['href']
             all_video_dict.update({video_name: video_url})
 
-        print('解析视频标题和地址完毕,返回结果,解析的页面是: {0}'.format(page_url))
         return all_video_dict
 
     def parse_video_real_link(self, page_url):
@@ -143,6 +142,7 @@ if __name__ == '__main__':
     # 开始获取网页的信息
     page_list = crawer_91.get_page_list()
     video_name_and_url_dict = {}  # 由于发现有时候抓取的视频名称一样，这样就可以去重
+    print('开始解析视频名称和地址')
     for i in range(1, page_list + 1):
         video_name_and_url_dict.update(crawer_91.get_video_name_and_url(crawer_91.main_page_url + '&page=' + str(i)))
     # 将获取到的视频名称和url写入数据库，如果此次只是下载之前下载失败的，这句之前都注释掉即可
