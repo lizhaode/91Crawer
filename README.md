@@ -12,4 +12,4 @@
     
 #### 使用步骤
 
-    git clone 项目后，使用 `pip install -r requirements.txt`安装依赖，然后执行 `python3 Main.py` 即可
+    git clone 项目后，使用 `pip install -r requirements.txt`安装依赖，然后执行 `python3 main.py` 即可
