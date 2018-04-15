@@ -25,7 +25,7 @@ class Crawer91:
                 (id INTEGER PRIMARY KEY AUTOINCREMENT,
                 name text UNIQUE,
                 url text UNIQUE,
-                is_download INT DEFAULT 0);'''
+                is_download INT DEFAULT 0)'''
 
         cursor.execute(create_database)
         conn.commit()
@@ -38,9 +38,11 @@ class Crawer91:
         cursor = conn.cursor()
 
         for i in info_dict.keys():
-            insert_sql = "INSERT INTO craw_url (name,url) VALUES ('{0}','{1}');".format(i, info_dict[i])
-            cursor.execute(insert_sql)
+            insert_sql = 'INSERT INTO craw_url (name,url) VALUES (:name,:url)'
+            print('开始写入数据库')
+            cursor.execute(insert_sql, {'name': i, 'url': info_dict[i]})
             conn.commit()
+            print('写入数据库完毕')
         cursor.close()
         conn.close()
 
@@ -53,7 +55,7 @@ class Crawer91:
         conn = sqlite3.connect('current91.db')
         cursor = conn.cursor()
 
-        select_sql = 'SELECT name,url FROM craw_url WHERE is_download = 0;'
+        select_sql = 'SELECT name,url FROM craw_url WHERE is_download = 0'
         cursor.execute(select_sql)
         all_result = cursor.fetchall()
         cursor.close()
@@ -66,9 +68,9 @@ class Crawer91:
         conn = sqlite3.connect('current91.db')
         cursor = conn.cursor()
 
-        update_sql = "UPDATE craw_url set is_download = 1 where name = '{0}' AND is_download = 0;".format(name)
-        print('下载完毕，开始更新状态，更新的语句: {0}'.format(update_sql))
-        cursor.execute(update_sql)
+        update_sql = "UPDATE craw_url set is_download = 1 where :name AND is_download = 0"
+        print('下载完毕，开始更新状态')
+        cursor.execute(update_sql, {'name': name})
         conn.commit()
         cursor.close()
         conn.close()
