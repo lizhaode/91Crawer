@@ -39,10 +39,8 @@ class Crawer91:
 
         for i in info_dict.keys():
             insert_sql = 'INSERT INTO craw_url (name,url) VALUES (:name,:url)'
-            print('开始写入数据库')
             cursor.execute(insert_sql, {'name': i, 'url': info_dict[i]})
             conn.commit()
-            print('写入数据库完毕')
         cursor.close()
         conn.close()
 
@@ -148,6 +146,7 @@ if __name__ == '__main__':
     # 将获取到的视频名称和url写入数据库，如果此次只是下载之前下载失败的，这句之前都注释掉即可
     print('分析视频结束，去重后一共获取到{0}个视频'.format(len(video_name_and_url_dict.keys())))
     crawer_91.write_info_to_database(video_name_and_url_dict)
+    print('写入数据库结束，开始下载')
 
     while True:
         database_list = crawer_91.get_url_from_database()
