@@ -53,7 +53,7 @@ class Crawer91:
         conn = sqlite3.connect('current91.db')
         cursor = conn.cursor()
 
-        select_sql = 'SELECT name,url FROM craw_url WHERE is_download = 0'
+        select_sql = 'SELECT `id`,name,url FROM craw_url WHERE is_download = 0'
         cursor.execute(select_sql)
         all_result = cursor.fetchall()
         cursor.close()
@@ -61,14 +61,14 @@ class Crawer91:
 
         return all_result
 
-    def update_isdownload(self, name):
+    def update_isdownload(self, craw_id):
 
         conn = sqlite3.connect('current91.db')
         cursor = conn.cursor()
 
-        update_sql = "UPDATE craw_url set is_download = 1 where :name AND is_download = 0"
+        update_sql = "UPDATE craw_url set is_download = 1 where `id` = {0} AND is_download = 0".format(craw_id)
         print('下载完毕，开始更新状态')
-        cursor.execute(update_sql, {'name': name})
+        cursor.execute(update_sql)
         conn.commit()
         cursor.close()
         conn.close()
@@ -155,13 +155,13 @@ if __name__ == '__main__':
         if database_list:
             for j in database_list:
                 try:
-                    print('开始解析： {0}'.format(j[0]))
-                    real_url_or_html = crawer_91.parse_video_real_link(j[1])
+                    print('开始解析： {0}'.format(j[1]))
+                    real_url_or_html = crawer_91.parse_video_real_link(j[2])
                 except AttributeError:
                     print('\n解析真实视频地址失败，贴出网页html：')
                     print(real_url_or_html)
                     break
-                crawer_91.download(real_url_or_html, j[0] + '.mp4')
+                crawer_91.download(real_url_or_html, j[1] + '.mp4')
                 crawer_91.update_isdownload(j[0])
         else:
             break
