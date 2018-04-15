@@ -104,6 +104,8 @@ class Crawer91:
         for i in bs.find_all('div', 'listchannel'):
             video_name = i.find('a', title=True)['title']
             video_url = i.find('a', title=True)['href']
+            # 去掉名称中的空格
+            video_name = video_name.replace(' ', '')
             all_video_dict.update({video_name: video_url})
 
         return all_video_dict
@@ -153,6 +155,7 @@ if __name__ == '__main__':
         if database_list:
             for j in database_list:
                 try:
+                    print('开始解析： {0}'.format(j[0]))
                     real_url_or_html = crawer_91.parse_video_real_link(j[1])
                 except AttributeError:
                     print('\n解析真实视频地址失败，贴出网页html：')
