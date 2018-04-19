@@ -4,6 +4,7 @@ import re
 import requests
 import sqlite3
 import subprocess
+import time
 from bs4 import BeautifulSoup
 from fake_useragent import UserAgent
 
@@ -13,6 +14,10 @@ class Crawer91:
     def __init__(self):
 
         self.main_page_url = 'http://91porn.com/v.php?category=long&viewtype=basic'
+
+    def time_print(self,print_str):
+
+        print('[' + time.strftime('%m/%d-%H:%M:%S') + ']' + print_str)
 
     def create_database(self):
 
@@ -68,12 +73,12 @@ class Crawer91:
         cursor = conn.cursor()
 
         update_sql = "UPDATE craw_url set is_download = 1 where `id` = {0} AND is_download = 0".format(craw_id)
-        print('下载完毕，开始更新状态')
+        self.time_print('下载完毕，开始更新状态')
         cursor.execute(update_sql)
         conn.commit()
         cursor.close()
         conn.close()
-        print('状态更新完毕')
+        self.time_print('状态更新完毕')
 
     def fake_headers(self):
 
@@ -92,7 +97,7 @@ class Crawer91:
         response = requests.get(self.main_page_url)
         bs = BeautifulSoup(response.text, "lxml")
         pages = bs.find_all(href=re.compile('category=long&viewtype=basic&page='))[-2].text
-        print('解析所有视频页数完毕，返回结果')
+        self.time_print('解析所有视频页数完毕，返回结果')
         return int(pages)
 
     def get_video_name_and_url(self, page_url):
@@ -117,7 +122,7 @@ class Crawer91:
         try:
             bs = BeautifulSoup(response.text, 'lxml')
             real_link = bs.find('video').find('source')['src']
-            print('解析真实视频地址完毕，地址: {0}'.format(real_link))
+            self.time_print('解析真实视频地址完毕，地址: {0}'.format(real_link))
             return real_link
         except AttributeError:
             return response.text
@@ -130,7 +135,7 @@ class Crawer91:
 
         with requests.get(video_url, headers=self.fake_headers(), stream=True) as r:
             write_file = open('91Crawer/' + file_name, 'wb')
-            print('开始写入文件: {0}'.format(file_name))
+            self.time_print('开始写入文件: {0}'.format(file_name))
             for i in r.iter_content(chunk_size=20971520):
                 write_file.write(i)
             write_file.close()
@@ -152,25 +157,25 @@ if __name__ == '__main__':
     # 开始获取网页的信息
     page_list = crawer_91.get_page_list()
     video_name_and_url_dict = {}  # 由于发现有时候抓取的视频名称一样，这样就可以去重
-    print('开始解析视频名称和地址')
+    crawer_91.time_print('开始解析视频名称和地址')
     for i in range(1, page_list + 1):
         video_name_and_url_dict.update(crawer_91.get_video_name_and_url(crawer_91.main_page_url + '&page=' + str(i)))
     # 将获取到的视频名称和url写入数据库，如果此次只是下载之前下载失败的，这句之前都注释掉即可
-    print('分析视频结束，去重后一共获取到{0}个视频'.format(len(video_name_and_url_dict.keys())))
+    crawer_91.time_print('分析视频结束，去重后一共获取到{0}个视频'.format(len(video_name_and_url_dict.keys())))
     crawer_91.write_info_to_database(video_name_and_url_dict)
-    print('写入数据库结束，开始下载')
+    crawer_91.time_print('写入数据库结束，开始下载')
 
     while True:
         database_list = crawer_91.get_url_from_database()
         if database_list:
             for j in database_list:
                 try:
-                    print('开始解析： {0}'.format(j[1]))
+                    crawer_91.time_print('开始解析： {0}'.format(j[1]))
                     real_url_or_html = crawer_91.parse_video_real_link(j[2])
                     crawer_91.aria2_download(real_url_or_html, j[1] + '.mp4')
                 except Exception:
-                    print('\n解析真实视频地址失败，贴出网页html：')
-                    print(real_url_or_html)
+                    crawer_91.time_print('\n解析真实视频地址失败，贴出网页html：')
+                    crawer_91.time_print(real_url_or_html)
                     continue
 
                 crawer_91.update_isdownload(j[0])
