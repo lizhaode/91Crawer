@@ -3,6 +3,7 @@ import random
 import re
 import requests
 import sqlite3
+import subprocess
 from bs4 import BeautifulSoup
 from fake_useragent import UserAgent
 
@@ -134,6 +135,15 @@ class Crawer91:
                 write_file.write(i)
             write_file.close()
 
+    def aria2_download(self,video_url,file_name):
+
+        # 创建91Crawer目录
+        if os.path.exists('91Crawer') is False:
+            os.mkdir('91Crawer')
+
+        down_command = 'aria2c -x 16 "{0}" -o "{1}"'.format(video_url,'91Crawer/' + file_name)
+        subprocess.check_output(down_command,shell=True)
+
 
 if __name__ == '__main__':
     crawer_91 = Crawer91()
@@ -157,11 +167,12 @@ if __name__ == '__main__':
                 try:
                     print('开始解析： {0}'.format(j[1]))
                     real_url_or_html = crawer_91.parse_video_real_link(j[2])
-                except AttributeError:
+                    crawer_91.aria2_download(real_url_or_html, j[1] + '.mp4')
+                except Exception:
                     print('\n解析真实视频地址失败，贴出网页html：')
                     print(real_url_or_html)
-                    break
-                crawer_91.download(real_url_or_html, j[1] + '.mp4')
+                    continue
+
                 crawer_91.update_isdownload(j[0])
         else:
             break
