@@ -15,7 +15,7 @@ class Crawer91:
 
         self.main_page_url = 'http://91porn.com/v.php?category=long&viewtype=basic'
 
-    def time_print(self,print_str):
+    def time_print(self, print_str):
 
         print('[' + time.strftime('%m/%d-%H:%M:%S') + ']' + print_str)
 
@@ -140,14 +140,15 @@ class Crawer91:
                 write_file.write(i)
             write_file.close()
 
-    def aria2_download(self,video_url,file_name):
+    def aria2_download(self, video_url, file_name):
 
         # 创建91Crawer目录
         if os.path.exists('91Crawer') is False:
             os.mkdir('91Crawer')
 
-        down_command = 'aria2c -x 16 "{0}" -o "{1}"'.format(video_url,'91Crawer/' + file_name)
-        subprocess.check_output(down_command,shell=True)
+        self.time_print('开始多线程下载文件: {0}'.format(file_name))
+        down_command = 'aria2c -x 16 "{0}" -o "{1}"'.format(video_url, '91Crawer/' + file_name)
+        subprocess.check_output(down_command, shell=True)
 
 
 if __name__ == '__main__':
