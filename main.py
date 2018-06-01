@@ -142,12 +142,15 @@ class Crawer91:
 
     def aria2_download(self, video_url, file_name):
 
+        crawer_path = '/Volumes/Untitled 1/91Crawer'
+
         # 创建91Crawer目录
-        if os.path.exists('91Crawer') is False:
-            os.mkdir('91Crawer')
+        if os.path.exists(crawer_path) is False:
+            os.mkdir(crawer_path)
 
         self.time_print('开始多线程下载文件: {0}'.format(file_name))
-        down_command = 'aria2c -x 16 "{0}" -o "{1}"'.format(video_url, '91Crawer/' + file_name)
+        down_command = 'aria2c -x 16 "{0}" --all-proxy=127.0.0.1:1079 -d "{1}" -o "{2}"'.format(video_url, crawer_path,
+                                                                                                file_name)
         subprocess.check_output(down_command, shell=True)
 
 
