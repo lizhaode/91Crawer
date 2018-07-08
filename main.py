@@ -154,8 +154,7 @@ class Crawer91:
             os.mkdir(crawer_path)
 
         self.time_print('开始多线程下载文件: {0}'.format(file_name))
-        down_command = 'aria2c -x 16 "{0}" --all-proxy=127.0.0.1:1079 -d "{1}" -o "{2}"'.format(video_url,
-                                                                                                crawer_path, file_name)
+        down_command = 'aria2c -x 16 "{0}" --all-proxy=127.0.0.1:1079 -d "{1}" -o "{2}"'.format(video_url, crawer_path, file_name)
         subprocess.call(down_command, shell=True)
 
 
