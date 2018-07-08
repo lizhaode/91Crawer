@@ -122,6 +122,11 @@ class Crawer91:
         try:
             bs = BeautifulSoup(response.text, 'lxml')
             real_link = bs.find('video').find('source')['src']
+
+            # 原始网页中抓取的链接中除了 http:// 外还包含 // ，应该替换成 /
+            tmp_link_list = real_link.split('//')
+            real_link = tmp_link_list[0] + '//' + tmp_link_list[1] + '/' + tmp_link_list[2]
+
             self.time_print('解析真实视频地址完毕，地址: {0}'.format(real_link))
             return real_link
         except AttributeError:
@@ -142,16 +147,16 @@ class Crawer91:
 
     def aria2_download(self, video_url, file_name):
 
-        crawer_path = '/Volumes/Untitled 1/91Crawer'
+        crawer_path = '/opt/videos'
 
         # 创建91Crawer目录
         if os.path.exists(crawer_path) is False:
             os.mkdir(crawer_path)
 
         self.time_print('开始多线程下载文件: {0}'.format(file_name))
-        down_command = 'aria2c -x 16 "{0}" --all-proxy=127.0.0.1:1079 -d "{1}" -o "{2}"'.format(video_url, crawer_path,
-                                                                                                file_name)
-        subprocess.check_output(down_command, shell=True)
+        down_command = 'aria2c -x 16 "{0}" --all-proxy=127.0.0.1:1079 -d "{1}" -o "{2}"'.format(video_url,
+                                                                                                crawer_path, file_name)
+        subprocess.call(down_command, shell=True)
 
 
 if __name__ == '__main__':
