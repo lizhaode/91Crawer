@@ -2,6 +2,8 @@
 
 这个项目是抓取91Porn网站上的“10分钟以上”标签的视频
 
+[![Build Status](https://travis-ci.org/lizhaode/91Crawer.svg?branch=master)](https://travis-ci.org/lizhaode/91Crawer)
+
 ### 使用方法
 
 #### 环境配置
