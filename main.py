@@ -9,7 +9,7 @@ from bs4 import BeautifulSoup
 from fake_useragent import UserAgent
 
 
-class Crawer91:
+class Crawler91:
 
     def __init__(self):
 
@@ -154,38 +154,65 @@ class Crawer91:
             os.mkdir(crawer_path)
 
         self.time_print('开始多线程下载文件: {0}'.format(file_name))
-        down_command = 'aria2c -x 16 "{0}" --all-proxy=127.0.0.1:1079 -d "{1}" -o "{2}"'.format(video_url, crawer_path, file_name)
+        down_command = 'aria2c -x 16 "{0}" --all-proxy=127.0.0.1:1079 -d "{1}" -o "{2}"'.format(video_url, crawer_path,
+                                                                                                file_name)
         subprocess.check_output(down_command, shell=True)
 
 
-if __name__ == '__main__':
-    crawer_91 = Crawer91()
+def new_database_and_download():
+    crawler_91 = Crawler91()
     # 创建数据库，注意：会删除现有的库
-    crawer_91.create_database()
+    crawler_91.create_database()
     # 开始获取网页的信息
-    page_list = crawer_91.get_page_list()
+    page_list = crawler_91.get_page_list()
     video_name_and_url_dict = {}  # 由于发现有时候抓取的视频名称一样，这样就可以去重
-    crawer_91.time_print('开始解析视频名称和地址')
+    crawler_91.time_print('开始解析视频名称和地址')
     for i in range(1, page_list + 1):
-        video_name_and_url_dict.update(crawer_91.get_video_name_and_url(crawer_91.main_page_url + '&page=' + str(i)))
+        video_name_and_url_dict.update(crawler_91.get_video_name_and_url(crawler_91.main_page_url + '&page=' + str(i)))
     # 将获取到的视频名称和url写入数据库，如果此次只是下载之前下载失败的，这句之前都注释掉即可
-    crawer_91.time_print('分析视频结束，去重后一共获取到{0}个视频'.format(len(video_name_and_url_dict.keys())))
-    crawer_91.write_info_to_database(video_name_and_url_dict)
-    crawer_91.time_print('写入数据库结束，开始下载')
+    crawler_91.time_print('分析视频结束，去重后一共获取到{0}个视频'.format(len(video_name_and_url_dict.keys())))
+    crawler_91.write_info_to_database(video_name_and_url_dict)
+    crawler_91.time_print('写入数据库结束，开始下载')
 
     while True:
-        database_list = crawer_91.get_url_from_database()
+        database_list = crawler_91.get_url_from_database()
         if database_list:
             for j in database_list:
+                real_url_or_html = ''
                 try:
-                    crawer_91.time_print('开始解析： {0}'.format(j[1]))
-                    real_url_or_html = crawer_91.parse_video_real_link(j[2])
-                    crawer_91.aria2_download(real_url_or_html, j[1] + '.mp4')
+                    crawler_91.time_print('开始解析： {0}'.format(j[1]))
+                    real_url_or_html = crawler_91.parse_video_real_link(j[2])
+                    crawler_91.aria2_download(real_url_or_html, j[1] + '.mp4')
                 except Exception:
-                    crawer_91.time_print('\n解析真实视频地址失败，贴出网页html：')
-                    crawer_91.time_print(real_url_or_html)
+                    crawler_91.time_print('\n解析真实视频地址失败，贴出网页html：')
+                    crawler_91.time_print(real_url_or_html)
                     continue
 
-                crawer_91.update_isdownload(j[0])
+                crawler_91.update_isdownload(j[0])
         else:
             break
+
+
+def only_download():
+    crawler_91 = Crawler91()
+    while True:
+        database_list = crawler_91.get_url_from_database()
+        if database_list:
+            for j in database_list:
+                real_url_or_html = ''
+                try:
+                    crawler_91.time_print('开始解析： {0}'.format(j[1]))
+                    real_url_or_html = crawler_91.parse_video_real_link(j[2])
+                    crawler_91.aria2_download(real_url_or_html, j[1] + '.mp4')
+                except Exception:
+                    crawler_91.time_print('\n解析真实视频地址失败，贴出网页html：')
+                    crawler_91.time_print(real_url_or_html)
+                    continue
+
+                crawler_91.update_isdownload(j[0])
+        else:
+            break
+
+
+if __name__ == '__main__':
+    new_database_and_download()
