@@ -62,7 +62,6 @@ class Crawler91:
             tmp_link_list = real_link.split('//')
             real_link = tmp_link_list[0] + '//' + tmp_link_list[1] + '/' + tmp_link_list[2]
 
-            time_print('解析真实视频地址完毕，地址: {0}'.format(real_link))
             return real_link
         except AttributeError:
             raise ValueError('parse video down link false')
@@ -88,7 +87,6 @@ class Crawler91:
         if os.path.exists(crawer_path) is False:
             os.mkdir(crawer_path)
 
-        time_print('开始多线程下载文件: {0}'.format(file_name))
         down_command = 'aria2c -x 16 "{0}" -d "{1}" -o "{2}"'.format(video_url, crawer_path,
                                                                      file_name)
         subprocess.check_output(down_command, shell=True)

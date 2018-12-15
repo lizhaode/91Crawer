@@ -5,7 +5,7 @@ from CrawerImpl import Crawler91
 from lib.print_with_time import time_print
 
 # 定义下载的线程数
-THREADS = 5
+THREADS = 8
 
 
 class MultiDownFromDatabase(threading.Thread):
@@ -22,7 +22,10 @@ class MultiDownFromDatabase(threading.Thread):
             try:
                 time_print('-[{0}]-开始解析： {1}'.format(self.getName(), name + '.mp4'))
                 real_url_or_html = craw.parse_video_real_link(url)
+                time_print('-[{0}]-解析真实视频地址完毕，地址: {1}'.format(self.getName(), real_url_or_html))
+                time_print('-[{0}]-开始下载文件: {1}'.format(self.getName(), name + '.mp4'))
                 craw.aria2_download(real_url_or_html, name + '.mp4')
+                time_print('-[{0}]-下载文件结束'.format(self.getName(), name + '.mp4'))
                 self._q.task_done()
             except ValueError as e:
                 time_print('-[{0}]-解析真实视频地址失败,{1}'.format(self.getName(), e))
