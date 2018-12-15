@@ -20,12 +20,12 @@ class MultiDownFromDatabase(threading.Thread):
         while True:
             name, url = self._q.get()
             try:
-                time_print('开始解析： {0}'.format(name))
+                time_print('-[{0}]-开始解析： {1}'.format(self.getName(), name + '.mp4'))
                 real_url_or_html = craw.parse_video_real_link(url)
                 craw.aria2_download(real_url_or_html, name + '.mp4')
                 self._q.task_done()
             except ValueError as e:
-                time_print('\n解析真实视频地址失败,{0}'.format(e))
+                time_print('-[{0}]-解析真实视频地址失败,{1}'.format(self.getName(), e))
 
 
 def multi_thread_down():
