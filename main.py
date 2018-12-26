@@ -51,7 +51,7 @@ def only_multi_thread_down():
         t.start()
 
     for i in ori_task_list:
-        if i['isDownload'] == 0:
+        if i.pop('isDownload') == 0:
             for j, k in i.items():
                 q.put((j, k))
 
