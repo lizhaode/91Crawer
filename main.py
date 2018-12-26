@@ -54,6 +54,7 @@ def only_multi_thread_down():
         if i.pop('isDownload') == 0:
             for j, k in i.items():
                 q.put((j, k))
+    q.join()
 
 
 if __name__ == '__main__':
