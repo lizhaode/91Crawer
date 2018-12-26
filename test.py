@@ -1,7 +1,7 @@
 import os
 import unittest
 
-from CrawerImpl import Crawler91
+from lib.CrawerImpl import Crawler91
 
 
 class TestCrawlerMethods(unittest.TestCase):

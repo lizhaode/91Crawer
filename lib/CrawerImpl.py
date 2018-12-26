@@ -20,12 +20,12 @@ class Crawler91:
         random_ip = str(random.randint(0, 255)) + '.' + str(random.randint(0, 255)) + '.' + str(
             random.randint(0, 255)) + '.' + str(random.randint(0, 255))
 
-        headres = {
+        headers = {
             'Accept-Language': 'zh-CN,zh;q=0.9',
             "User-Agent": UserAgent().random,
             'X-Forwarded-For': random_ip
         }
-        return headres
+        return headers
 
     def get_page_list(self):
 
