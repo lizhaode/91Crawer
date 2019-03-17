@@ -16,4 +16,4 @@ class TestCrawlerMethods(unittest.TestCase):
 
     def test_download(self):
         Crawler91().download('https://dldir1.qq.com/qqfile/qq/QQ9.0.8/24201/QQ9.0.8.24201.exe', 'qq.exe')
-        assert os.path.exists('qq.exe'), 'download failed'
+        assert os.path.exists('91Crawer/qq.exe'), 'download failed'
