@@ -1,6 +1,8 @@
-import queue
-import threading
 import json
+import queue
+import subprocess
+import threading
+from multiprocessing.dummy import Pool
 
 from lib.CrawerImpl import Crawler91
 from lib.MultiThreadDownload import MultiDownloadFromQueue
@@ -57,6 +59,35 @@ def only_multi_thread_down():
     q.join()
 
 
+def use_map():
+    def download(name_and_url: tuple):
+        try:
+            time_print('开始解析: {0}'.format(name_and_url[0] + '.mp4'))
+            real_url_or_html = craw.parse_video_real_link(name_and_url[1])
+            time_print('解析真实视频地址完毕，地址: {0}'.format(real_url_or_html))
+            time_print('开始下载文件: {0}'.format(name_and_url[0] + '.mp4'))
+            craw.aria2_download(real_url_or_html, name_and_url[0] + '.mp4')
+            time_print('下载结束: {0}'.format(name_and_url[0] + '.mp4'))
+        except ValueError as e:
+            time_print('解析真实视频地址失败,{0}'.format(e))
+        except subprocess.CalledProcessError as e:
+            time_print('下载失败,{0}'.format(e))
+
+    craw = Crawler91()
+    page_list = craw.get_page_list()
+    video_name_and_url_dict = {}  # 由于发现有时候抓取的视频名称一样，这样就可以去重
+    time_print('开始解析视频名称和地址')
+    for i in range(1, page_list + 1):
+        video_name_and_url_dict.update(craw.get_video_name_and_url(craw.main_page_url + '&page=' + str(i)))
+    time_print('解析所有名称和地址完毕')
+
+    p = Pool(THREADS)
+    p.map(download, video_name_and_url_dict.items())
+    p.close()
+    p.join()
+
+
 if __name__ == '__main__':
-    get_and_multi_thread_down()
+    # get_and_multi_thread_down()
     # only_multi_thread_down()
+    use_map()
